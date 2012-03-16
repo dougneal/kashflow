@@ -14,7 +14,10 @@ module Kashflow
       raise "missing login/password" unless login and password
     
       @login, @password = login, password
-      @service = Savon::Client.new "https://securedwebapp.com/api/service.asmx?wsdl"
+      @service = Savon::Client.new do |wsdl, http|
+        wsdl.document = "https://securedwebapp.com/api/service.asmx?wsdl"
+        http.auth.ssl.verify_mode = :none
+      end
     end
   
     def lookup_api_method(name)

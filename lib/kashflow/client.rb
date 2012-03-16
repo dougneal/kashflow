@@ -118,7 +118,7 @@ module Kashflow
             </soap:Body>
           </soap:Envelope>]
         end.to_hash
-      rescue Savon::SOAPFault => e
+      rescue Savon::SOAP::Fault => e
         puts "soap fault:" + e.inspect
         return false
       end

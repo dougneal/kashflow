@@ -28,8 +28,8 @@ module Kashflow
       api_method = lookup_api_method(m)
     
       if api_method
-        #puts "found api_method #{api_method.name} for #{m}: #{api_method.request_attrs.inspect}"
-        #puts "you're calling with #{args.inspect}"
+        # puts "found api_method #{api_method.name} for #{m}: #{api_method.request_attrs.inspect}"
+        # puts "you're calling with #{args.inspect}"
         
         api_call(m, api_method.name, args)
       else
@@ -40,7 +40,7 @@ module Kashflow
     def api_call(name, method, args)
       soap_return = soap_call(name, method, args)
       response = soap_return["#{name}_response".to_sym]
-      #puts "got response: " + response.inspect
+      # puts "got response: " + response.inspect
     
       raise "API call failed: [#{response[:status_detail]}]\n\n #{response.inspect}" unless response[:status] == 'OK'
     
@@ -52,15 +52,15 @@ module Kashflow
 		if r.values.all?{|v| v.is_a?(Array) }# || r.keys.size == 1
 		  object_type, attrs = r.first
 		else
-		  #puts "arrayifying #{r.inspect}"
+      # puts "arrayifying #{r.inspect}"
 		  object_type = lookup_api_method(name).response_attrs.first[:type]
 		  attrs = r.first.last.is_a?(Hash) ? [r.first.last] : [r]
 		end
 	      
-		#puts "it's an enumerable... #{object_type} | #{attrs.inspect}"
+    # puts "it's an enumerable... #{object_type} | #{attrs.inspect}"
 	      
 		ostructs = attrs.map do |record_attrs|
-		  #puts "making new ostruct with #{record_attrs.inspect}"
+      # puts "making new ostruct with #{record_attrs.inspect}"
 		  OpenStruct.new(record_attrs.merge(:object_type => object_type.to_s))
 		end
 		#r.first.last
@@ -91,9 +91,10 @@ module Kashflow
     
     # called with CamelCase version of method name
     def soap_call(name, method, params = {})
+      # puts "name = #{name}, method = #{method}, params = #{params.inspect}"
       begin
-        result = @service.send(name) do |soap|
-          soap.action = "KashFlow/#{method}"
+        result = @service.request(name) do |soap|
+          # soap.action = "KashFlow/#{method}"
         
           params = params.pop if params.is_a?(Array)
           params_xml = params.map do |field, value|

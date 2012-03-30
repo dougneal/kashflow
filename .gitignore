@@ -9,5 +9,4 @@ tmp/**/*
 vendor/gems/**/*
 .DS_Store
 .rvmrc
-Gemfile.lock
 pkg/*

@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{kashflow}
-  s.version = "0.0.7"
+  s.name = "kashflow"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pogodan"]
-  s.date = %q{2012-03-16}
-  s.description = %q{A Ruby wrapper for the Kashflow Accouting SOAP API}
-  s.email = %q{dev@pogodan.com}
+  s.date = "2012-03-30"
+  s.description = "A Ruby wrapper for the Kashflow Accouting SOAP API"
+  s.email = "dev@pogodan.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.mkd"
@@ -32,15 +32,11 @@ Gem::Specification.new do |s|
     "test/helper.rb",
     "test/test_kashflow.rb"
   ]
-  s.homepage = %q{http://www.pogodan.com/projects}
+  s.homepage = "http://www.pogodan.com/projects"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.4.2}
-  s.summary = %q{A Ruby wrapper for the Kashflow SOAP API}
-  s.test_files = [
-    "test/helper.rb",
-    "test/test_kashflow.rb"
-  ]
+  s.rubygems_version = "1.8.19"
+  s.summary = "A Ruby wrapper for the Kashflow SOAP API"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
@@ -49,18 +45,16 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<savon>, ["~> 0.9.9"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
-      s.add_development_dependency(%q<rcov>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, [">= 0"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<i18n>, [">= 0"])
       s.add_development_dependency(%q<activesupport>, [">= 0"])
     else
       s.add_dependency(%q<savon>, ["~> 0.9.9"])
       s.add_dependency(%q<nokogiri>, [">= 0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
-      s.add_dependency(%q<rcov>, [">= 0"])
+      s.add_dependency(%q<bundler>, [">= 0"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<i18n>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 0"])
     end
@@ -68,9 +62,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<savon>, ["~> 0.9.9"])
     s.add_dependency(%q<nokogiri>, [">= 0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
-    s.add_dependency(%q<rcov>, [">= 0"])
+    s.add_dependency(%q<bundler>, [">= 0"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<i18n>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 0"])
   end

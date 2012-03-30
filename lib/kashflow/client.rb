@@ -80,8 +80,13 @@ module Kashflow
 	    	text = "sup" if operation == "update" and object == "supplier"
 	    	if line
 	    		text = object_alias[:line]
-	    		line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
-	    		line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
+          case name.to_s
+          when "insert_invoice_line_with_invoice_number"
+  	    		line_id = "<InvoiceNumber>#{params_xml.match(/<InvoiceNumber>(.*?)<\/InvoiceNumber>/)[1]}</InvoiceNumber>\n\t\t"
+          else
+  	    		line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
+  	    		line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
+          end
 	    	end
 	    	return ["#{line_id}<#{text}>", "</#{text}>"]
 	else

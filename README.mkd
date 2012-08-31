@@ -11,7 +11,7 @@ Fork from https://github.com/pogodan/kashflow
 
 Installation
 ------------
-    gem install kashflow
+    gem install butterware-kashflow
 
 Use
 -------------

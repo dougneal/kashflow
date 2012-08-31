@@ -1,6 +1,13 @@
 Kashflow
 ====================
+
 A Ruby wrapper for the Kashflow API
+
+Fork from https://github.com/pogodan/kashflow 
+
+* Upgrade to last version of gems, fix savon syntax, error handling and various 1.9 bugs.
+* Add insert_invoice_line_with_invoice_number call.
+
 
 Installation
 ------------

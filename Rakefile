@@ -12,13 +12,13 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "kashflow"
-  gem.homepage = "http://www.pogodan.com/projects"
+  gem.name = "butterware-kashflow"
+  gem.homepage = "https://github.com/butterware/kashflow"
   gem.license = "MIT"
   gem.summary = %Q{A Ruby wrapper for the Kashflow SOAP API}
   gem.description = %Q{A Ruby wrapper for the Kashflow Accouting SOAP API}
-  gem.email = "dev@pogodan.com"
-  gem.authors = ["Pogodan"]
+  gem.email = "david@butterware.co.uk"
+  gem.authors = ["Pogodan", "David Bourguignon"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'

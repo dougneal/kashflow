@@ -78,7 +78,7 @@ module Kashflow
     	if needs_object.include? operation
 	    	text = object_alias[object.to_sym]
 	    	text = "sup" if operation == "update" and object == "supplier"
-	    	if line
+	    	if line == "line" # prevent add_invoice_payment trying to do below actions
 	    		text = object_alias[:line]
           case name.to_s
           when "insert_invoice_line_with_invoice_number"

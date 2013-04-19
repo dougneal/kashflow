@@ -72,7 +72,7 @@ module Kashflow
     end
     
     def object_wrapper(name, params_xml)
-    	object_alias = {:customer => "custr", :quote => "quote", :invoice => "Inv", :supplier => "supl", :receipt => "Inv", :line => "InvLine"}
+    	object_alias = {:customer => "custr", :quote => "quote", :invoice => "Inv", :supplier => "supl", :receipt => "Inv", :line => "InvLine", :payment => "InvoicePayment"}
     	needs_object = [ "insert", "update" ]
     	operation, object, line = name.to_s.split("_")
     	if needs_object.include? operation
@@ -87,6 +87,8 @@ module Kashflow
   	    		line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
   	    		line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
           end
+        elsif line == "payment" && object == "invoice"
+          text = object_alias[:payment]
 	    	end
 	    	return ["#{line_id}<#{text}>", "</#{text}>"]
 	else

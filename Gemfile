@@ -1,4 +1,4 @@
-source :rubygems
+source "https://rubygems.org"
 
 gem "savon", "~> 0.9.9"
 gem 'nokogiri'

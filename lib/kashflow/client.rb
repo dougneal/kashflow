@@ -46,51 +46,49 @@ module Kashflow
     
       r = response["#{name}_result".to_sym]
       if r.is_a?(String)
-      		r
+          r
       else
-	      if r.is_a?(Enumerable)
-		if r.values.all?{|v| v.is_a?(Array) }# || r.keys.size == 1
-		  object_type, attrs = r.first
-		else
-      # puts "arrayifying #{r.inspect}"
-		  object_type = lookup_api_method(name).response_attrs.first[:type]
-		  attrs = r.first.last.is_a?(Hash) ? [r.first.last] : [r]
-		end
-	      
-    # puts "it's an enumerable... #{object_type} | #{attrs.inspect}"
-	      
-		ostructs = attrs.map do |record_attrs|
-      # puts "making new ostruct with #{record_attrs.inspect}"
-		  OpenStruct.new(record_attrs.merge(:object_type => object_type.to_s))
-		end
-		#r.first.last
-	      else
-		#puts "it's a #{r.class}"
-		r
-	      end
+        if r.is_a?(Enumerable)
+          if r.values.all?{|v| v.is_a?(Array) }# || r.keys.size == 1
+            object_type, attrs = r.first
+          else
+            # puts "arrayifying #{r.inspect}"
+            object_type = lookup_api_method(name).response_attrs.first[:type]
+            attrs = r.first.last.is_a?(Hash) ? [r.first.last] : [r]
+          end
+              
+          # puts "it's an enumerable... #{object_type} | #{attrs.inspect}"
+              
+          ostructs = attrs.map do |record_attrs|
+            # puts "making new ostruct with #{record_attrs.inspect}"
+            OpenStruct.new(record_attrs.merge(:object_type => object_type.to_s))
+          end
+        else
+          r
+        end
       end
     end
     
     def object_wrapper(name, params_xml)
-    	object_alias = {:customer => "custr", :quote => "quote", :invoice => "Inv", :supplier => "supl", :receipt => "Inv", :line => "InvLine", :payment => "InvoicePayment"}
-    	needs_object = [ "insert", "update" ]
-    	operation, object, line = name.to_s.split("_")
-    	if needs_object.include? operation
-	    	text = line ? object_alias[line.to_sym] : object_alias[object.to_sym]
-	    	text = "sup" if operation == "update" and object == "supplier"
-	    	if line == "line" # prevent add_invoice_payment trying to do below actions
+      object_alias = {:customer => "custr", :quote => "quote", :invoice => "Inv", :supplier => "supl", :receipt => "Inv", :line => "InvLine", :payment => "InvoicePayment"}
+      needs_object = [ "insert", "update" ]
+      operation, object, line = name.to_s.split("_")
+      if needs_object.include? operation
+        text = line ? object_alias[line.to_sym] : object_alias[object.to_sym]
+        text = "sup" if operation == "update" and object == "supplier"
+        if line == "line" # prevent add_invoice_payment trying to do below actions
           case name.to_s
           when "insert_invoice_line_with_invoice_number"
-  	    		line_id = "<InvoiceNumber>#{params_xml.match(/<InvoiceNumber>(.*?)<\/InvoiceNumber>/)[1]}</InvoiceNumber>\n\t\t"
+            line_id = "<InvoiceNumber>#{params_xml.match(/<InvoiceNumber>(.*?)<\/InvoiceNumber>/)[1]}</InvoiceNumber>\n\t\t"
           else
-  	    		line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
-  	    		line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
+            line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
+            line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
           end
-	    	end
-	    	return ["#{line_id}<#{text}>", "</#{text}>"]
-	else
-		return ["",""]
-	end
+        end
+        return ["#{line_id}<#{text}>", "</#{text}>"]
+      else
+        return ["",""]
+      end
     end
     
     # called with CamelCase version of method name
@@ -106,9 +104,9 @@ module Kashflow
             "<#{xml_tag}>#{value}</#{xml_tag}>"
           end.join("\n") unless params.blank?
           
-	  params_xml = params_xml.gsub(/Id>/,"ID>") if params_xml
-	  params_xml = params_xml.gsub(/Dbid>/,"DBID>") if params_xml
-	  pretext, posttext = object_wrapper(name, params_xml)
+          params_xml = params_xml.gsub(/Id>/,"ID>") if params_xml
+          params_xml = params_xml.gsub(/Dbid>/,"DBID>") if params_xml
+          pretext, posttext = object_wrapper(name, params_xml)
           
           soap.xml = %[<?xml version="1.0" encoding="utf-8"?>
           <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">

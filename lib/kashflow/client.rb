@@ -68,41 +68,94 @@ module Kashflow
         end
       end
     end
-    
+   
     def object_wrapper(name, params_xml)
-      object_alias = {:customer => "custr", :quote => "quote", :invoice => "Inv", :supplier => "supl", :receipt => "Inv", :line => "InvLine", :payment => "InvoicePayment"}
-      needs_object = [ "insert", "update" ]
-      operation, object, line = name.to_s.split("_")
-      if needs_object.include? operation
-        text = line ? object_alias[line.to_sym] : object_alias[object.to_sym]
-        text = "sup" if operation == "update" and object == "supplier"
-        if line == "line" # prevent add_invoice_payment trying to do below actions
-          case name.to_s
-          when "insert_invoice_line_with_invoice_number"
-            line_id = "<InvoiceNumber>#{params_xml.match(/<InvoiceNumber>(.*?)<\/InvoiceNumber>/)[1]}</InvoiceNumber>\n\t\t"
-          else
-            line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
-            line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
-          end
-        end
-        return ["#{line_id}<#{text}>", "</#{text}>"]
-      else
+      operation, object = name.to_s.split('_', 2)
+
+      # Aliases differ depending on whether we're inserting or updating; thanks Kashflow
+      xml_tags = {
+        'insert' => {
+          'customer'        => 'custr',
+          'quote'           => 'quote',
+          'invoice'         => 'Inv',
+          'supplier'        => 'supl',
+          'receipt'         => 'Inv',
+          'invoice_line'    => 'InvLine',
+          'invoice_payment' => 'InvoicePayment',
+          'receipt_payment' => 'ReceiptPayment'
+        },
+        'update' => {
+          'customer' => 'custr',
+          'quote'    => 'quote',
+          'invoice'  => 'Inv',
+          'supplier' => 'sup',
+          'receipt'  => 'Receipt',
+          'line'     => 'InvLine',
+          'payment'  => 'InvoicePayment'
+        }
+      }
+     
+
+      if not ['insert', 'update'].include?(operation) then
+        # Yuck - this should really be an exception
         return ["",""]
       end
+
+      xml_tag = xml_tags[operation][object]
+
+      # Not quite sure what this bit is all about, but not my concern right now so leaving as is
+      if object =~ /^invoice_line/ then
+        if name.to_s == "insert_invoice_line_with_invoice_number" then
+          line_id = "<InvoiceNumber>#{params_xml.match(/<InvoiceNumber>(.*?)<\/InvoiceNumber>/)[1]}</InvoiceNumber>\n\t\t"
+        else
+          line_id = "<ReceiptID>#{params_xml.match(/<ReceiptID>(.*?)<\/ReceiptID>/)[1]}</ReceiptID>\n\t\t" if object == "receipt"
+          line_id = "<InvoiceID>#{params_xml.match(/<InvoiceID>(.*?)<\/InvoiceID>/)[1]}</InvoiceID>\n\t\t" if object == "invoice"
+        end
+
+        return ["#{line_id}<#{xml_tag}>", "</#{xml_tag}>"]
+      end
+
+      return [sprintf("<%s>", xml_tag), sprintf("</%s>", xml_tag)]
     end
-    
-    # called with CamelCase version of method name
+
     def soap_call(name, method, params = {})
-      # puts "name = #{name}, method = #{method}, params = #{params.inspect}"
       begin
         result = @service.request(name) do |soap|
-          # soap.action = "KashFlow/#{method}"
-        
+       
           params = params.pop if params.is_a?(Array)
-          params_xml = params.map do |field, value|
-            xml_tag = field.to_s.camelize
-            "<#{xml_tag}>#{value}</#{xml_tag}>"
-          end.join("\n") unless params.blank?
+
+          # Our bit
+          if params.is_a?(OpenStruct) then
+            params_xml = ""
+
+            params.marshal_dump.each do |key, value|
+              xml_tag = key.to_s.camelize
+              if xml_tag == 'Lines' then
+                params_xml << "<Lines>\n"
+
+                [value[:any_type]].flatten.each do |line|
+                  params_xml << "<anyType xsi:type=\"InvoiceLine\">\n"
+                  line.each do |line_key, line_value|
+                    xml_tag = line_key.to_s.camelize
+                    params_xml << sprintf("<%s>%s</%s>\n", xml_tag, line_value, xml_tag)
+                  end
+                  params_xml << '</anyType>'
+                end
+                
+                params_xml << "</Lines>\n"
+              else
+                params_xml << "<#{xml_tag}>#{value}</#{xml_tag}>\n"
+              end
+            end
+
+          # Incumbent code
+          else
+            params_xml = params.map do |field, value|
+              xml_tag = field.to_s.camelize
+              "<#{xml_tag}>#{value}</#{xml_tag}>"
+            end.join("\n") unless params.blank?
+
+          end
           
           params_xml = params_xml.gsub(/Id>/,"ID>") if params_xml
           params_xml = params_xml.gsub(/Dbid>/,"DBID>") if params_xml
@@ -126,5 +179,6 @@ module Kashflow
         return false
       end
     end
+
   end
 end
